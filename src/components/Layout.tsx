@@ -1,15 +1,12 @@
-import Sidebar from '@/components/Sidebar'
+import Sidebar from "@/components/Sidebar";
+import Dashboard from "@/components/Dashboard";
+import { useState } from "react";
 
-type LayoutProps = {
-    children: React.ReactNode
-}
-
-export default function Layout({ children }: LayoutProps) {
-    return (
-        <>
-            <Sidebar>
-                {children}
-            </Sidebar>
-        </>
-    )
+export default function Layout() {
+  const [currentPage, setCurrentPage] = useState("DASHBOARD");
+  return (
+    <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage}>
+      {currentPage === "DASHBOARD" && <Dashboard />}
+    </Sidebar>
+  );
 }
