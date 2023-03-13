@@ -6,7 +6,7 @@ import Layout from "@/components/Layout";
 import Login from "@/components/Login";
 
 const Page: NextPageWithLayout = () => {
-  const { user, login } = useContext(AuthContext);
+  const { user, login, logout } = useContext(AuthContext);
   return (
     <>
       <Head>
@@ -14,7 +14,7 @@ const Page: NextPageWithLayout = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {user && (
-        <Layout />
+        <Layout logout={logout}/>
       )}
       {!user && <Login login={login} />}
     </>

@@ -24,10 +24,10 @@
     content: " ";
     float: left;
     margin-left: auto;
-    margin-right: -1.5rem;
+    margin-right: -2.1rem;
     border-radius: 0.5rem;
     box-sizing: border-box;
-    transform: scaleY(1.2);
+    transform: scaleY(1.5);
 }
 
 .active {

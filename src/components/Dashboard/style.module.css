@@ -1,0 +1,11 @@
+.sysInfoHeading {
+	align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+	margin-bottom: 1rem !important;
+}
+
+.skeleton {
+	margin: 1rem;
+}
