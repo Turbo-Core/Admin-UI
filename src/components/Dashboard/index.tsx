@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MenuItem, TextField, Typography } from "@mui/material";
+import { Alert, MenuItem, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import Cpu from "./cpu";
 import FS from "./fs";
@@ -26,68 +26,103 @@ export type Sysinfo = {
 };
 
 export default function Dashboard() {
-	const [sysinfo, setSysinfo] = useState<Sysinfo | null>(null);
-	const [currentInterval, setCurrentInterval] = useState<NodeJS.Timeout | null>(null);
-	const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
+    const [sysinfo, setSysinfo] = useState<Sysinfo | null>(null);
+    const [currentInterval, setCurrentInterval] =
+        useState<NodeJS.Timeout | null>(null);
+    const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
+    const [error, setError] = useState<boolean>(false);
 
     useEffect(() => {
         const webSocket = new WebSocket("ws://localhost:8080/api/health/ws");
-		setWebSocket(webSocket);
+        setWebSocket(webSocket);
 
         webSocket.onopen = () => {
-            webSocket.send("auth");
+            webSocket.send("auth eyJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNjc5MjgxMjMzIiwiaXNzIjoiVHVyYm9Db3JlIiwidHlwZSI6ImF0IiwidWlkIjoiNjE1NGI1NmUtYjAzMS00YmVjLTliZjMtM2RmZmZiMDA4OTg4In0.Mr4jNU3fNwjprWLeUsaqk3GKwIHazmGl2SNABticgXk");
         };
 
         webSocket.onmessage = (event) => {
-            if (event.data === "Ok") {
+            if (event.data === "ok") {
                 const interval = setInterval(() => {
-                    webSocket.send("sysinfo");
-                }, 5 * 1000);
+					webSocket.readyState === webSocket.OPEN &&  webSocket.send("sysinfo");
+				}, 5 * 1000);
                 setCurrentInterval(interval);
-				return;
+                return;
             }
             setSysinfo(JSON.parse(event.data));
+            setError(false);
         };
 
-        webSocket.onerror = (event) => {};
+        webSocket.onerror = (_) => {
+            setError(true);
+        };
+
+        return () => {
+            // Clean up code when component unmounts
+            if (currentInterval) {
+                clearInterval(currentInterval);
+            }
+            webSocket.readyState === webSocket.OPEN && webSocket.close();
+            webSocket.readyState !== webSocket.OPEN &&
+                (webSocket.onopen = () => {
+                    webSocket.close();
+                });
+            // Make sure the websocket is closed to avoid multiple connections for each remount
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-  return (
-    <>
-      <Typography variant="h4" fontWeight={600}>Dashboard</Typography>
-	  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-	  	<Typography variant="h5" fontWeight={600} marginY="1.5rem">System Information</Typography>
-		  <TextField
-          select
-          label="Refresh Rate"
-          defaultValue={5}
-		  size="small"
-		  onChange={(e) => {
-			  if (currentInterval) {
-				  clearInterval(currentInterval);
-			  }
-			  const interval = setInterval(() => {
-				webSocket?.send("sysinfo");
-			}, parseFloat(e.target.value) * 1000);
-			setCurrentInterval(interval);
-		  }}
-        >
-          {[0.5, 1, 5, 10, 30, 60].map((option) => (
-            <MenuItem key={option} value={option}>
-              {option} seconds
-            </MenuItem>
-          ))}
-        </TextField>
-	  </div>
-      <Grid container spacing={4}>
-        {/* 2 cols on desktop, 1 col on mobile */}
-		<Grid xs={12} md={6}>
-			<Cpu sysinfo={sysinfo}/>
-		</Grid>
-		<Grid xs={12} md={6}>
-			<FS sysinfo={sysinfo}/>
-		</Grid>
-      </Grid>
-    </>
-  );
+    return (
+        <>
+            {error && (
+                <Alert severity="error" style={{ margin: "1rem 0" }}>
+                    Failed to establish websocket connection with the server.
+                    Reload the page to try again.
+                </Alert>
+            )}
+            <Typography variant="h4" fontWeight={600}>
+                Dashboard
+            </Typography>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                }}
+            >
+                <Typography variant="h5" fontWeight={600} marginY="1.5rem">
+                    System Information
+                </Typography>
+                <TextField
+                    select
+                    label="Refresh Rate"
+                    defaultValue={5}
+                    size="small"
+                    onChange={(e) => {
+                        if (currentInterval) {
+                            clearInterval(currentInterval);
+                        }
+                        const interval = setInterval(() => {
+							webSocket?.readyState === webSocket?.OPEN &&  webSocket?.send("sysinfo");
+						}, parseFloat(e.target.value) * 1000);
+                        setCurrentInterval(interval);
+                    }}
+                >
+                    {[0.5, 1, 5, 10, 30, 60].map((option) => (
+                        <MenuItem key={option} value={option}>
+                            {option} seconds
+                        </MenuItem>
+                    ))}
+                </TextField>
+            </div>
+            <Grid container spacing={4}>
+                {/* 2 cols on desktop, 1 col on mobile */}
+                <Grid xs={12} md={6}>
+                    <Cpu sysinfo={sysinfo} />
+                </Grid>
+                <Grid xs={12} md={6}>
+                    <FS sysinfo={sysinfo} />
+                </Grid>
+            </Grid>
+        </>
+    );
 }
