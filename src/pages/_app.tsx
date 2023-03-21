@@ -7,6 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import React from "react";
+import { ProjectProvider } from "@/context/project";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   GetLayout?: (page: ReactElement) => ReactNode;
@@ -35,7 +36,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        {GetLayout(<Component {...pageProps} />)}
+        <ProjectProvider>
+            {GetLayout(<Component {...pageProps} />)}
+        </ProjectProvider>
       </AuthProvider>
     </ThemeProvider>
   );
