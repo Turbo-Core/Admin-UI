@@ -8,6 +8,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import React from "react";
 import { ProjectProvider } from "@/context/project";
+import { Martel_Sans } from "next/font/google";
+
+const martel = Martel_Sans({ subsets: ["latin"], weight: "600" });
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   GetLayout?: (page: ReactElement) => ReactNode;
@@ -28,6 +31,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         palette: {
           mode: prefersDarkMode ? 'dark' : 'light',
         },
+        typography: {
+            fontFamily: martel.style.fontFamily
+        }
       }),
     [prefersDarkMode],
   );

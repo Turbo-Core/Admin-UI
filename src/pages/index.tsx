@@ -3,12 +3,13 @@ import type { NextPageWithLayout } from "./_app";
 import { useContext } from "react";
 import { AuthContext } from "@/context/auth";
 import Layout from "@/components/Layout";
-import Login from "@/components/Login";
 import { ProjectContext } from "@/context/project";
+import dynamic from 'next/dynamic'
 
 const Page: NextPageWithLayout = () => {
   const { user, login, logout } = useContext(AuthContext);
   const { query } = useContext(ProjectContext);
+  const Login = dynamic(() => import('@/components/Login'), { ssr: false })
   return (
     <>
       <Head>
