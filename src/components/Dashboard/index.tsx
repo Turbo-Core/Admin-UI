@@ -37,7 +37,7 @@ export default function Dashboard() {
         setWebSocket(webSocket);
 
         webSocket.onopen = () => {
-            webSocket.send("auth eyJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNjc5MjgxMjMzIiwiaXNzIjoiVHVyYm9Db3JlIiwidHlwZSI6ImF0IiwidWlkIjoiNjE1NGI1NmUtYjAzMS00YmVjLTliZjMtM2RmZmZiMDA4OTg4In0.Mr4jNU3fNwjprWLeUsaqk3GKwIHazmGl2SNABticgXk");
+            webSocket.send("auth eyJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNjg2NjAzMDgwIiwiaXNzIjoiVHVyYm9Db3JlIiwicm9sZSI6ImFkbWluIiwidHlwZSI6ImF0IiwidWlkIjoiNzI2OTIxNmItZjExYy00OWQ0LThiZmItNzU5M2I4MGFhODhkIn0.KKxbQgoFSPdHzdN2LD4CIJsuCNfIMCqf9hITZZNlCUI");
         };
 
         webSocket.onmessage = (event) => {

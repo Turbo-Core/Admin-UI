@@ -12,14 +12,14 @@ export interface ProjectContextInterface {
     query: {
         projectId?: string;
     };
-    getProject: () => void;
-    setProject: (project: Project) => void;
+    getProject: () => Project;
+    setProject: (project: Project | null) => void;
 }
 
 export const projectContextDefaults: ProjectContextInterface = {
     query: { projectId: undefined },
-    getProject: () => {},
-    setProject: () => {},
+    getProject: () => {return { id: "", name: "", createdAt: "", updatedAt: "" }},
+    setProject: (project: Project | null) => {},
 };
 
 export const ProjectContext = React.createContext<ProjectContextInterface>(
@@ -39,7 +39,11 @@ export const ProjectProvider = ({ children }: { children: React.ReactNode }) => 
         }
     };
 
-    const setProject = (project: Project) => {
+    const setProject = (project: Project | null) => {
+        if (project === null) {
+            setQuery({ projectId: undefined });
+            return;
+        }
         setQuery({ projectId: project.id });
     };
 
